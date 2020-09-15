@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "seed:dev": "nodemon ./db/seed.js"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +15,11 @@
   "bugs": {
     "url": "https://github.com/tillyninjaspace/juicebox/issues"
   },
-  "homepage": "https://github.com/tillyninjaspace/juicebox#readme",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "pg": "^8.3.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
 }
