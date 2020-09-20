@@ -8,6 +8,11 @@ const {
   updatePost,
   getAllPosts,
   getPostsByUser,
+  createTags,
+  createPostTag,
+  addTagsToPost,
+  getPostById,
+  getPostsByTagName,
 } = require('./index');
 
 async function dropTables() {
@@ -15,6 +20,8 @@ async function dropTables() {
     console.log("Starting to drop tables...");
 
     await client.query(`
+      DROP TABLE IF EXISTS post_tags;
+      DROP TABLE IF EXISTS tags;
       DROP TABLE IF EXISTS posts;
       DROP TABLE IF EXISTS users;
     `);
@@ -51,6 +58,23 @@ async function createTables() {
       );
     `);
 
+    await client.query(`
+    CREATE TABLE tags (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(255) UNIQUE NOT NULL
+    );
+  `);
+
+
+  await client.query(`
+  CREATE TABLE post_tags (
+    "postId" INTEGER REFERENCES posts(id),
+    "tagId" INTEGER REFERENCES tags(id),
+    UNIQUE ("postId", "tagId")
+  );
+`);
+
+
     console.log("Finished building tables!");
   } catch (error) {
     console.error("Error building tables!");
@@ -77,29 +101,59 @@ async function createInitialPosts() {
   try {
     const [albert, sandra, glamgal] = await getAllUsers();
 
+    console.log("Starting to create posts...");
     await createPost({
       authorId: albert.id,
-      title: "Yo! First Post 2020",
-      content: "I hope I love writing code as much as I love eating ice cream."
+      title: "First Post",
+      content: "This is my first post. I hope I love writing blogs as much as I love writing them.",
+      tags: ["#happy", "#youcandoanything"]
     });
 
     await createPost({
       authorId: sandra.id,
-      title: "Sandra's Post 2020",
-      content: "Hi ya'll. My 1st post. Great new hobby for Covid-19."
+      title: "How does this work?",
+      content: "Seriously, does this even do anything?",
+      tags: ["#happy", "#worst-day-ever"]
     });
 
     await createPost({
       authorId: glamgal.id,
-      title: "Glamgal's first post of the year.",
-      content: "Learn how to look fabulous."
+      title: "Living the Glam Life",
+      content: "Do you even? I swear that half of you are posing.",
+      tags: ["#happy", "#youcandoanything", "#canmandoeverything"]
     });
-    console.log("Are Initial Posts Showing")
+    console.log("Finished creating posts!");
   } catch (error) {
-    console.log("Error with iniital posts")
+    console.log("Error creating posts!");
     throw error;
   }
 }
+
+
+async function createInitialTags() {
+  try {
+    console.log("Starting to create tags...");
+
+    const [happy, sad, inspo, catman] = await createTags([
+      '#happy', 
+      '#worst-day-ever', 
+      '#youcandoanything',
+      '#catmandoeverything'
+    ]);
+
+    const [postOne, postTwo, postThree] = await getAllPosts();
+
+    await addTagsToPost(postOne.id, [happy, inspo]);
+    await addTagsToPost(postTwo.id, [sad, inspo]);
+    await addTagsToPost(postThree.id, [happy, catman, inspo]);
+  
+    console.log("Finished creating tags!");
+  } catch (error) {
+    console.log("Error creating tags!");
+    throw error;
+  }
+}
+
 
 async function rebuildDB() {
   try {
@@ -110,7 +164,7 @@ async function rebuildDB() {
     await createInitialUsers();
     await createInitialPosts();
   } catch (error) {
-    console.log("error with RebuildDB func")
+    console.log("Error during rebuildDB")
     throw error;
   }
 }
@@ -144,6 +198,22 @@ async function testDB() {
     console.log("Calling getUserById with 1 which is Al Bert");
     const albert = await getUserById(1);
     console.log("Result:", albert);
+
+    console.log("Calling updatePost on posts[1], only updating tags");
+    const updatePostTagsResult = await updatePost(posts[0].id, {
+      tags: ["#youcandoanything", "#redfish", "#bluefish"]
+    });
+    console.log("Result:", updatePostTagsResult);
+
+    console.log("Calling getPostsByTagName with #happy");
+    const postsWithHappy = await getPostsByTagName("#happy");
+    console.log("Result:", postsWithHappy);
+
+    //working on this
+    // console.log("Creating initial tags")
+    // const initialTags = await createInitialTags()
+    // console.log("Result: Finished initial tags", initialTags)
+    //additional test
 
     console.log("Finished database tests!");
   } catch (error) {
