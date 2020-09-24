@@ -8,7 +8,8 @@ const {
   updatePost,
   getAllPosts,
   getAllTags,
-  getPostsByTagName
+  getPostsByTagName,
+  getUserByUsername
 } = require('./index');
 
 async function dropTables() {
@@ -190,6 +191,10 @@ async function testDB() {
     console.log("Calling getPostsByTagName with #happy");
     const postsWithHappy = await getPostsByTagName("#happy");
     console.log("Result:", postsWithHappy);
+
+    console.log("Getting getUserByUsername Part 2 Day 2")
+    const userByUsername = await getUserByUsername('albert')
+    console.log("Result of Albert Username Test Day 2:", userByUsername)
 
     console.log("Finished database tests!");
   } catch (error) {
