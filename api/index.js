@@ -70,10 +70,13 @@ apiRouter.use(async (req, res, next) => {
   }
 });
 
-//Second middleware for this page. This is for JWT.
+//Second middleware for this page. This is for above JWT.
 apiRouter.use((req, res, next) => {
   if (req.user) {
     console.log("User is set:", req.user);
+    //Below was just a test during a help meeting. It causes
+    //http errors later so I had to comment it out
+    // res.send({ message: "Working message..." })
   }
 
   next();

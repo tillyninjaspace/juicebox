@@ -1,7 +1,8 @@
 const PORT = 3000;
 const express = require('express');
 const server = express();
-
+//May not need jwt required below. It is currently already on API/index.js and API/users.js
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 
@@ -13,14 +14,15 @@ const morgan = require('morgan');
 server.use(morgan('dev'));
 
 
-// const { apiRouter } = require('./api');
-//below was before
+const { client } = require('./db');
+client.connect();
+
+// Preston's example in his demo is const apiRouter = require('./api);
+//same  as below
 const apiRouter = require('./api');
 server.use('/api', apiRouter);
 
 
-const { client } = require('./db');
-client.connect();
 
 server.use((req, res, next) => {
     // console.log("<____Body Logger START____>");
@@ -35,4 +37,3 @@ server.use((req, res, next) => {
 server.listen(PORT, () => {
   console.log('The server is up on port', PORT)
 });
-

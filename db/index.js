@@ -184,6 +184,15 @@ async function getPostById(postId) {
       WHERE id=$1;
     `, [postId]);
 
+    // THIS IS NEW for Mod 3
+    if (!post) {
+      throw {
+        name: "PostNotFoundError",
+        message: "Could not find a post with that postId"
+      };
+    }
+    // NEWNESS ENDS HERE
+
     const { rows: tags } = await client.query(`
       SELECT tags.*
       FROM tags
@@ -353,5 +362,6 @@ module.exports = {
   getAllTags,
   createPostTag,
   addTagsToPost,
-  getUserByUsername
+  getUserByUsername,
+  getPostById
 }

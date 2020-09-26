@@ -48,15 +48,16 @@ usersRouter.post('/login', async (req, res, next) => {
     if (user && user.password == password) {
       // create token & return to user
 
+
 //Sign an object (something like jwt.sign({/* user data */}, process.env.JWT_SECRET)) with both the id and username from the user object with the secret in process.env.JWT_SECRET
 //Add a key of token, with the token returned from step 2, to the object passed to res.send()
-const token = jwt.sign( user  , JWT_SECRET);
-console.log('the token:', token);
-//Ask Redzuan about above about key of token
 
-
+      const token = jwt.sign( user , JWT_SECRET, { expiresIn: '7d' });
+      console.log('the token:', token);
+//Ask Redzuan about expiresIn: and how to return it with the message in res.send below
 
       res.send({ message: "you're logged in now!", "token": token });
+      
     } else {
       next({ 
         name: 'IncorrectCredentialsError', 
