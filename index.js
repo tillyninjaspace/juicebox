@@ -1,4 +1,4 @@
-const PORT = 3000;
+const { PORT = 3000 } = process.env
 const express = require('express');
 const server = express();
 //May not need jwt required below. It is currently already on API/index.js and API/users.js
