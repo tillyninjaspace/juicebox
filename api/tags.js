@@ -22,18 +22,14 @@ tagsRouter.get('/:tagName/posts', async (req, res, next) => {
       const posts = await getPostsByTagName(tagName)
 
     if(!posts) {
-        next('no posts');
+        next({message: "no posts"});
       }
-      console.log('posts: ', posts);
     
-    //This extra below trying to mimick from Preston's demo example
-    // if (posts.authorId === req.user.id){
-    //   res.send({posts})
-    //   } else {
-    //   res.status(403);
-    //   next('UNAUTHORIZED posts');
-    //   }
-    //Conditional ends here
+    if (posts) {
+      res.send({
+        posts
+      });
+    }
 
     } catch ({ name, message }) {
       next({ name, message })
