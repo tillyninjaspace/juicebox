@@ -5,8 +5,7 @@ const { getAllTags,
 
 tagsRouter.use((req, res, next) => {
   console.log("A request is being made to /tags");
-
-  next(); // THIS IS DIFFERENT
+  next(); 
 });
 
 tagsRouter.get('/', async (req, res) => {
@@ -17,29 +16,28 @@ tagsRouter.get('/', async (req, res) => {
 });
 
 
-//It shows up in the return information but not the browser
 tagsRouter.get('/:tagName/posts', async (req, res, next) => {
-    // read the tagname from the params
     try {
-      let tagName = req.params.tagName
+      let tagName = req.params.tagName;
       const posts = await getPostsByTagName(tagName)
-      // use our method to get posts by tag name from the db
+
     if(!posts) {
         next('no posts');
       }
       console.log('posts: ', posts);
     
-    if (posts.authorId === req.user.id){
-      res.send({posts})
-      } else {
-      res.status(403);
-      next('UNAUTHORIZED posts');
-      }
+    //This extra below trying to mimick from Preston's demo example
+    // if (posts.authorId === req.user.id){
+    //   res.send({posts})
+    //   } else {
+    //   res.status(403);
+    //   next('UNAUTHORIZED posts');
+    //   }
+    //Conditional ends here
 
     } catch ({ name, message }) {
-      next()
-      // next({ name, message });
-      // forward the name and message to the error handler
+      next({ name, message })
+      
     }
 });
 

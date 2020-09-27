@@ -1,18 +1,14 @@
-// api/users.js
 const express = require('express');
 const usersRouter = express.Router();
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = process.env;
 const { getAllUsers } = require('../db');
 const { getUserByUsername } = require('../db');
-
-//Yoyo! last item before committing for Part 2, Day 2 -- Tilly
 const { createUser } = require('../db');
 
 usersRouter.use((req, res, next) => {
   console.log("A request is being made to /users");
-
-  next(); // THIS IS DIFFERENT
+  next();
 });
 
 usersRouter.get('/', async (req, res) => {
@@ -23,18 +19,10 @@ usersRouter.get('/', async (req, res) => {
   });
 });
 
-//Previous users.Router Code 
-// usersRouter.post('/login', async (req, res, next) => {
-//   console.log(req.body);
-//   res.end();
-// });
 
-
-//Updated users.Router Code from Part 2, Day 2 on Sept 24 -- Tilly
 usersRouter.post('/login', async (req, res, next) => {
   const { username, password } = req.body;
 
-  // request must have both
   if (!username || !password) {
     next({
       name: "MissingCredentialsError",
@@ -46,16 +34,9 @@ usersRouter.post('/login', async (req, res, next) => {
     const user = await getUserByUsername(username);
 
     if (user && user.password == password) {
-      // create token & return to user
-
-
-//Sign an object (something like jwt.sign({/* user data */}, process.env.JWT_SECRET)) with both the id and username from the user object with the secret in process.env.JWT_SECRET
-//Add a key of token, with the token returned from step 2, to the object passed to res.send()
 
       const token = jwt.sign( user , JWT_SECRET, { expiresIn: '7d' });
       console.log('the token:', token);
-//Ask Redzuan about expiresIn: and how to return it with the message in res.send below
-
       res.send({ message: "you're logged in now!", "token": token });
       
     } else {
@@ -71,7 +52,6 @@ usersRouter.post('/login', async (req, res, next) => {
 });
 
 
-//YoYO! Last thing to add with createUser deconstructe above! 
 usersRouter.post('/register', async (req, res, next) => {
   const { username, password, name, location } = req.body;
 
@@ -107,8 +87,6 @@ usersRouter.post('/register', async (req, res, next) => {
     next({ name, message })
   } 
 });
-
-
 
 
 module.exports = usersRouter;
